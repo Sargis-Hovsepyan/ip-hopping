@@ -17,18 +17,18 @@ class IPHopperManager:
         while True:
             client, address = server.accept()
             
-            thread = threading.Thread(target=self.handle_client, args=(client, address))
+            thread = threading.Thread(target=self.handle_clients, args=(client, address))
             thread.start()
             
-            print(f'[ACTIVE CONNECTIONS] : {threading.activeCount() - 1}')
+            print(f'[ACTIVE CONNECTIONS] : {threading.active_count() - 1}')
     
     def handle_clients(self, client, address):
         print(f"[NEW CONNECTION] : {address}")
         
         while True:
-            data = client.recv(1024).decode('utf-8')
+            data = client.recv(1024)
             
-            if data == '!DISCONNECT':
+            if data.decode('utf-8') == '!DISCONNECT':
                 print(f'[{address} : Disconnected.')
                 break
 
@@ -41,4 +41,14 @@ class IPHopperManager:
     def process_data(self, data):
         # Process received data and return response
         # Placeholder implementation, replace with actual logic
-        return b"Received: " + data
+        if data:
+            print("Received: " + data.decode('utf-8'))
+            return b'Server Response'
+        else:
+            print("Error: Empty data received")
+            return b'Empty data received'
+
+
+if __name__ == "__main__":
+    server = IPHopperManager('127.0.0.1', 5555)
+    server.start_server()
