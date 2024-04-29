@@ -4,16 +4,17 @@ class Client:
     def __init__(self, host, port):
         self.host = host
         self.port = port
-        self.client_socket = None
+        
+        self.client = None
 
     def close_connection(self):
-        if self.client_socket:
-            self.client_socket.close()
+        if self.client:
+            self.client.close()
     
     def connect(self):
         try:
-            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.client_socket.connect((self.host, self.port))
+            self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.client.connect((self.host, self.port))
             self.connected = True
             print("Connected to server.")
         except ConnectionRefusedError:
@@ -28,7 +29,7 @@ class Client:
             return
 
         try:
-            self.client_socket.sendall(message.encode('utf-8'))
+            self.client.sendall(message.encode('utf-8'))
             print("Message sent successfully.")
         except ConnectionAbortedError:
             print("Connection aborted. Reconnecting...")
@@ -38,6 +39,9 @@ class Client:
             print(f"Error occurred while sending message: {e}")
 
 
+#--------------------------------------- #
+#                  MAIN                  #
+#--------------------------------------- #
 
 if __name__ == "__main__":
     host = "localhost"
