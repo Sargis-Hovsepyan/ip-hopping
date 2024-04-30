@@ -16,7 +16,7 @@ class IPHopperManager:
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.clients = {}
 
-        self.ip_range = ipaddress.ip_network('192.168.1.0/24')
+        self.ip_range = ipaddress.ip_network('154.168.1.0/24')
     
     def start(self):
         self.server.bind((self.host, self.port))
@@ -45,10 +45,10 @@ class IPHopperManager:
                 break
 
             # Generate IP for target
-            if (seed != 0):
-                self.taregt_ip = ip_hopping(self.ip_range, seed=seed)
+            # if (seed != 0):
+            #     self.tareget_ip = ip_hopping(self.ip_range, seed=seed)
             
-            response = self.process_data(data, address)
+            response = self.process_data(data, address, seed)
 
             # Create a new Connection
             client.close()
@@ -60,16 +60,20 @@ class IPHopperManager:
         # Closing the Connection.
         client.close()
     
-    def process_data(self, data, address):
+    def process_data(self, data, address, seed):
         # Process received data and return response
         if data:
+            new_ip = self.target_ip
+            if seed != 0:
+                new_ip = ip_hopping(self.ip_range, seed)
+            
             print(f"[{address}]: " + data.decode('utf-8'))
             
             # Decode the received bytes into a string
             client_data = data.decode()
             
             # Hash the new IP address
-            hashed_ip = hashlib.sha256(self.target_ip.encode()).hexdigest()
+            hashed_ip = hashlib.sha256(new_ip.encode()).hexdigest()
             
             # Add hashed IP to the client data
             response = client_data + "\nNIP: " + hashed_ip
