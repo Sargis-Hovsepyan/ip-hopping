@@ -57,9 +57,6 @@ class TargetServer:
         if ip_address == hash_new_ip:
             process = True
 
-        print("ip_address: " + ip_address)
-        print("new_ip_address: " + hash_new_ip)
-
         return client_data[:client_data.index("NIP:")].encode(), process
 
     def process_data(self, data, address):
