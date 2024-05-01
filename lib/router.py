@@ -43,9 +43,15 @@ class Router:
             data = client.recv(1024)
             if data:
                 print(f"[RECEIVED] from {address}: {data.decode('utf-8')}")
+
                 client_data = data.decode('utf-8')
                 index = client_data.rfind("#")
                 seed = int(client_data[index + 1:])
+
+                address = {'source': '127.0.0.1:5555',
+                           'destination': self.ip + ":" + str(target_port)}
+                self.routing_table.append(address)
+
                 if seed != 0:
                     self.ip = ip_hopping(self.ip_range, seed)
 
