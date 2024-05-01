@@ -105,7 +105,12 @@ if __name__ == "__main__":
     routers = []
 
     address = ['127.0.0.1', 7000]
+    address1 = ['127.0.0.1', 7001]
+    address2 = ['127.0.0.1', 7002]
+
     routers.append(address)
+    routers.append(address1)
+    routers.append(address2)
 
     server = IPHopperManager('127.0.0.1', 5555, '127.0.0.1', 5556, routers)
     server.start()
