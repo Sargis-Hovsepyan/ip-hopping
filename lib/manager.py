@@ -50,7 +50,7 @@ class IPHopperManager:
                 break
 
             response = self.process_data(data, address, seed)
-            self.send_to_router(response, self.target_ip, self.target_port)
+            self.send_to_router(response)
 
         # Closing the Connection.
         client.close()
@@ -61,12 +61,12 @@ class IPHopperManager:
         client.sendall(message)
 
         client.close()
-    
+
     def send_to_router(self, message):
         router = random.choice(self.routers)
 
         router_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        router_client.connect((router.host, router.port))
+        router_client.connect((router[0], router[1]))
         router_client.sendall(message)
         router_client.close()
 
@@ -96,14 +96,16 @@ class IPHopperManager:
 
 
 # --------------------------------------- #
-#                  MAIN                  #
+#                  MAIN                   #
 # --------------------------------------- #
 
 if __name__ == "__main__":
 
+    # Create at least one router
     routers = []
-    rt = Router('127.0.0.1', 10000)
-    routers.append(rt)
+
+    address = ['127.0.0.1', 7000]
+    routers.append(address)
 
     server = IPHopperManager('127.0.0.1', 5555, '127.0.0.1', 5556, routers)
     server.start()
