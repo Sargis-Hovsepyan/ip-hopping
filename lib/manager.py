@@ -89,14 +89,14 @@ class IPHopperManager:
         hashed_ip = hashlib.sha256(new_ip.encode()).hexdigest()
 
         # Add hashed IP to the client data
-        response = client_data + "\nNIP: " + hashed_ip
+        response = client_data + "\nNIP: " + hashed_ip + "#" + str(seed)
 
         # Encode the processed data as bytes
         return response.encode()
 
 
 # --------------------------------------- #
-#                  MAIN                   #
+#                  MAIN                  #
 # --------------------------------------- #
 
 if __name__ == "__main__":
