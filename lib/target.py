@@ -33,31 +33,15 @@ class TargetServer:
                     continue
 
                 # Change IP address
-                response, process = self.change_ip(data, address, seed)
-                if (process):
-                    self.process_data(response, address)
-                else:
-                    print(
-                        f"[TARGET SERVER]: Mismatch of IP Sent by Manager: Refusing to Process!")
+                self.change_ip(seed)
+                self.process_data(data, address)
 
-    def change_ip(self, data, address, seed):
-        client_data = data.decode('utf-8')
-        process = False
-
-        last_line = client_data.split('\n')[-1]
-        ip_address = last_line[len("NIP: "):].strip()
-
+    def change_ip(self, seed):
         new_ip = self.host
         if seed != 0:
             new_ip = ip_hopping(self.ip_range, seed)
 
-        hash_new_ip = hashlib.sha256(new_ip.encode()).hexdigest()
         self.ip_hopped = new_ip
-
-        if ip_address == hash_new_ip:
-            process = True
-
-        return client_data[:client_data.index("NIP:")].encode(), process
 
     def process_data(self, data, address):
         if data:
