@@ -5,18 +5,19 @@ from hopping import ip_hopping
 import ipaddress
 
 class Router:
-    def __init__(self, host, port, ip_range):
+    def __init__(self, host, port):
         self.host = host
         self.port = port
-        self.ip_range = ip_range
+        self.ip_range = ipaddress.ip_network('154.168.1.0/24')
+        
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind((self.host, self.port))
         self.server.listen()
         
-        self.routing_table = {} 
-        self.active_connections = {} 
+        self.routing_table = []
+        self.active_connections = {}
 
-        self.lock = threading.Lock() 
+        self.lock = threading.Lock()
     
     def start(self):
         print(f"[ROUTER STARTED] : {self.host}:{self.port}")
@@ -30,13 +31,11 @@ class Router:
 
     def handle_client(self, client, address):
         with self.lock:
-            if address[0] not in self.routing_table:
-                new_ip = ip_hopping(self.ip_range)
-                self.routing_table[address[0]] = new_ip
-                print(f"[ROUTING] : {address} => {new_ip}")
-
-            target_ip = self.routing_table[address[0]]
-            target_port = self.port
+            rt =  next((route for route in self.routing_table if route["source"] == '127.0.0.1:5555'), None)
+            target_ip = rt['destination'].split(":")[0]
+            target_port = rt['destination'].split(":")[1]
+        
+            print(f"[ROUTING] : {address} => {target_ip}")
 
             try:
                 data = client.recv(1024)
@@ -66,3 +65,15 @@ class Router:
         self.server.close()
         print("[ROUTER STOPPED]")
 
+
+# --------------------------------------- #
+#                  MAIN                  #
+# --------------------------------------- #
+
+if __name__ == "__main__":
+    router = Router('127.0.0.1', 10000)
+
+    address = {'source' : '127.0.0.1:5555', 'destination' : '127.0.0.1:5556'}
+    router.routing_table.append(address)
+
+    router.start()
